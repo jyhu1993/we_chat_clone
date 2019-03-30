@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../constants.dart' show Constants;
+import '../constants.dart';
 
+enum ActionItems {
+  GROUP_CHAT, ADD_FRIEND, QR_SCAN, PAYMENT, HELP
+}
 // 没有继承，一个单纯的class
 class NavigationIconView {
   final String _title;
@@ -13,9 +16,12 @@ class NavigationIconView {
     _icon = icon,
     _title = title,
     item = new BottomNavigationBarItem(
-      icon: Icon(icon),
-      activeIcon: Icon(activeIcon),
-      title: Text(title),
+      icon: Icon(icon, color: Color(AppColors.TabIconNormal),),
+      activeIcon: Icon(activeIcon, color: Color(AppColors.TabIconActive),),
+      title: Text(title, style: TextStyle(
+        fontSize: 14.0,
+        color: Color(AppColors.TabIconNormal),
+      ),),
       backgroundColor: Colors.white,
     );
 }
@@ -80,6 +86,18 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ];
   }
+  _buildPopupMenuItem(int iconName, String title) {
+    return Row(
+      children: <Widget>[
+        Icon(IconData(
+          iconName,
+          fontFamily: Constants.IconFontFamily,
+        ), size: 22, color: const Color(AppColors.AppBarPopupMenuTextColor),),
+        Container(width: 12,),
+        Text(title, style: TextStyle(color: const Color(AppColors.AppBarPopupMenuTextColor)),),
+      ],
+    );
+  }
   @override
   Widget build(BuildContext context) {
     final BottomNavigationBar botNavBar =BottomNavigationBar(
@@ -100,9 +118,36 @@ class _HomeScreenState extends State<HomeScreen> {
             icon:Icon(Icons.search),
             onPressed: () {print('按钮');},
           ),
-          IconButton(
+          // 显示下拉菜单的一个控件
+          PopupMenuButton(
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuItem<ActionItems>>[
+                PopupMenuItem(
+                  child: _buildPopupMenuItem(0xe656, '发起群聊'),
+                  value: ActionItems.GROUP_CHAT,
+                ),
+                PopupMenuItem(
+                  child: _buildPopupMenuItem(0xe60d, '添加朋友'),
+                  value: ActionItems.ADD_FRIEND,
+                ),
+                PopupMenuItem(
+                  child: _buildPopupMenuItem(0xe63d, '扫一扫'),
+                  value: ActionItems.QR_SCAN,
+                ),
+                PopupMenuItem(
+                  child: _buildPopupMenuItem(0xe600, '收付款'),
+                  value: ActionItems.PAYMENT,
+                ),
+                PopupMenuItem(
+                  child: _buildPopupMenuItem(0xe63e, '帮助与反馈'),
+                  value: ActionItems.HELP,
+                ),
+              ];
+            },
             icon: Icon(Icons.add),
-            onPressed: () {print('add');},
+            onSelected:  (ActionItems selected) {
+              print('点击的是$selected');
+            },
           ),
         ],
       ),
