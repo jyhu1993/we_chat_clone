@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../constants.dart' show AppColors, AppStyles, Constants;
 import '../modal/conversation.dart';
 
+
+enum Device {
+  MAC, WINDOWS
+}
+
 class _CoversationItem extends StatelessWidget {
   const _CoversationItem({Key key, this.conversation}) 
     : assert(conversation != null),
@@ -121,6 +126,50 @@ class _CoversationItem extends StatelessWidget {
   }
 }
 
+class _DeviceInfoItem extends StatelessWidget {
+  const _DeviceInfoItem({
+    this.device: Device.WINDOWS,
+  }) : 
+    assert(device != null);
+  final Device device;
+  int get iconName {
+    return device == Device.WINDOWS ? 0xe601 : 0xe644;
+  }
+
+  String get deviceName {
+    return device == Device.WINDOWS ? 'Windows' : 'Mac';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 24.0, top: 10, right: 24, bottom: 10),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            width: Constants.DividerWidth,
+            color: Color(AppColors.DividerColor),
+          )
+        ),
+        color: Color(AppColors.DeviceInfoItemBg),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Icon(IconData(
+            this.iconName,
+            fontFamily: Constants.IconFontFamily,
+          ), color: Color(AppColors.DeviceInfoItemText),),
+          SizedBox(width: 16,),
+          Text('$deviceName 微信已登录, 手机通知已关闭', style: AppStyles.DeviceInfoItemTextStyle)
+        ],
+      ),
+    );
+  }
+}
+
+
 class ConversationPage extends StatefulWidget {
   _ConversationPageState createState() => _ConversationPageState();
 }
@@ -128,11 +177,15 @@ class ConversationPage extends StatefulWidget {
 class _ConversationPageState extends State<ConversationPage> {
   @override
   Widget build(BuildContext context) {
+    var mockConversations = conversationMockData['conversations'];
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
-        return _CoversationItem(conversation: mockConversations[index],);
+        if(index == 0) {
+          return _DeviceInfoItem(device: Device.MAC);
+        }
+        return _CoversationItem(conversation: mockConversations[index - 1],);
       },
-      itemCount: mockConversations.length,
+      itemCount: mockConversations.length + 1,
     );
   }
 }
